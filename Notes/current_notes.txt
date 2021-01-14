@@ -1,0 +1,23 @@
+Wiki:
+
+    \Need to create admin user
+        \Actually might not need one because 
+
+    Need to complete entry page
+        Need to create HTML page for it
+        Need to create view for it
+            Need to make it so that the view serves the HTML page
+            and dynamically grabs all entries within the /entries directory
+            It then loops through them to generate the link to each page
+        
+
+
+
+
+
+
+
+
+
+
+
