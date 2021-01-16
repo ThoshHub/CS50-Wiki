@@ -2,6 +2,7 @@ from django.shortcuts import render
 from django import forms
 from . import util
 from markdown2 import Markdown
+import random
 
 class NewEntryForm(forms.Form):
     title = forms.CharField(label="Title", widget=forms.TextInput(attrs={'class': "form-control"}))
@@ -77,3 +78,12 @@ def create_entry(request):
     else:
         return render(request, "encyclopedia/error.html") # the user should not be able to make it here as post is the only way to get to this url
 
+def random_page(request):
+    entry_list = util.list_entries() # grab list of entries
+    
+    entry_info_markdown = util.get_entry(random.choice(entry_list)) # pick a random entry
+    markdowner = Markdown()
+    entry_info = markdowner.convert(entry_info_markdown) # convert it to makrdown
+    return render(request, "encyclopedia/entry.html", {
+        "entry_info": entry_info
+    })
