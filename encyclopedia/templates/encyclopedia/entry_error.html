@@ -1,0 +1,13 @@
+{% extends "encyclopedia/layout.html" %}
+
+{% block title %}
+    Page not found!
+{% endblock %}
+
+{% block body %}
+    <div class="alert alert-danger" role="alert" style="font-size: 40px; display: inline-block;">
+        <strong>Error: </strong>There is already an entry for <a href="{% url 'wiki' title %}">{{ title }}</a>! 
+        <br><a href="{% url 'index' %}" class="alert-link">Go Home</a>
+    </div>
+
+{% endblock %}
