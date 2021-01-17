@@ -33,13 +33,20 @@ def search(request):
     if request.method == "POST":
         search_term = str(request.POST.get('q', None))
         # print("Searched for: " + search_term)
-        entry_list = util.list_entries()
-        results = [entry for entry in entry_list if search_term.upper() in entry.upper()]
+        entry_info_markdown = util.get_entry(search_term)
 
-        # print(str(results))
-        return render(request, "encyclopedia/search.html", {
-            "results": results, "query": search_term
-        })
+        if entry_info_markdown is None: # the query does not match an existing entry
+            entry_list = util.list_entries()
+            results = [entry for entry in entry_list if search_term.upper() in entry.upper()]
+            return render(request, "encyclopedia/search.html", {
+                "results": results, "query": search_term
+            })
+        else: # query matches an entry, return that entry
+            markdowner = Markdown()
+            entry_info = markdowner.convert(entry_info_markdown)
+            return render(request, "encyclopedia/entry.html", {
+                "entry_info": entry_info, "entry_title": search_term
+            })
     else:
         return render(request, "encyclopedia/error.html") # the user should not be able to make it here as post is the only way to get to this url
 
