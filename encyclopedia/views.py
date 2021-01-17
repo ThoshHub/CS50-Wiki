@@ -90,7 +90,7 @@ def random_page(request):
     markdowner = Markdown()
     entry_info = markdowner.convert(entry_info_markdown) # convert it to makrdown
     return render(request, "encyclopedia/entry.html", {
-        "entry_info": entry_info, "entry": title
+        "entry_info": entry_info, "entry_title": title
     })
 
 def edit_page(request, entry):
