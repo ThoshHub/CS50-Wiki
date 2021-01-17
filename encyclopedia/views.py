@@ -26,7 +26,7 @@ def entry(request, entry):
         # print("Info: " + entry_info) # DEBUG
 
         return render(request, "encyclopedia/entry.html", {
-            "entry_info": entry_info
+            "entry_info": entry_info, "entry_title": entry
         })
 
 def search(request):
@@ -44,7 +44,6 @@ def search(request):
         return render(request, "encyclopedia/error.html") # the user should not be able to make it here as post is the only way to get to this url
 
 def create(request):
-
     return render(request, "encyclopedia/create.html", {
         "form": NewEntryForm()
     })
@@ -66,10 +65,9 @@ def create_entry(request):
                 entry_info = markdowner.convert(entry_info_markdown)
 
                 return render(request, "encyclopedia/entry.html", {
-                    "entry_info": entry_info
+                    "entry_info": entry_info, "entry": title
                 })
             else: # a duplicate will be created, so instead  serve an error page
-                print("ERROR PAGE SERVED...")
                 return render(request, "encyclopedia/entry_error.html", {
                     "title": title
                 })
@@ -80,10 +78,47 @@ def create_entry(request):
 
 def random_page(request):
     entry_list = util.list_entries() # grab list of entries
-    
-    entry_info_markdown = util.get_entry(random.choice(entry_list)) # pick a random entry
+    title = random.choice(entry_list) # pick a random entry
+    entry_info_markdown = util.get_entry(title) # get info for that entry
     markdowner = Markdown()
     entry_info = markdowner.convert(entry_info_markdown) # convert it to makrdown
     return render(request, "encyclopedia/entry.html", {
-        "entry_info": entry_info
+        "entry_info": entry_info, "entry": title
     })
+
+def edit_page(request, entry):
+    # Get the entry
+    entry_info_markdown = util.get_entry(entry)
+    markdowner = Markdown()
+    entry_info = markdowner.convert(entry_info_markdown)
+    # print("Entry Info: " + entry_info)
+    form = NewEntryForm({'title': entry, 'content': entry_info_markdown})
+    # form.fields['title'].widget.attrs['disabled'] = True # disable editing of the entry title
+    return render(request, "encyclopedia/entry_edit.html", {
+        "form": form, "title": entry
+    })
+
+def edit(request):
+    if request.method == "POST":
+        form = NewEntryForm(request.POST)
+        if form.is_valid():
+            print("Form is Valid")
+            # parse out title and content
+            title = form.cleaned_data["title"]
+            content = form.cleaned_data["content"]
+            
+            print("Title: " + title + ", Content: " + content)
+            util.save_entry(title, content) # overwrite the current entry
+            entry_info_markdown = util.get_entry(title) # grab the entry again
+            
+            markdowner = Markdown()
+            entry_info = markdowner.convert(entry_info_markdown)
+
+            return render(request, "encyclopedia/entry.html", {
+                "entry_info": entry_info, "entry_title": title
+            })
+        else:
+            print("Form is NOT Valid")
+            return render(request, "encyclopedia/error.html") # the user should not be able to make it here as there is no authentication for invalid strings    
+    else:
+        return render(request, "encyclopedia/error.html") # the user should not be able to make it here as post is the only way to get to this url
