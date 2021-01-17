@@ -72,7 +72,7 @@ def create_entry(request):
                 entry_info = markdowner.convert(entry_info_markdown)
 
                 return render(request, "encyclopedia/entry.html", {
-                    "entry_info": entry_info, "entry": title
+                    "entry_info": entry_info, "entry_title": title
                 })
             else: # a duplicate will be created, so instead  serve an error page
                 return render(request, "encyclopedia/entry_error.html", {
